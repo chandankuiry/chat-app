@@ -5,6 +5,7 @@ var http= require('http').Server(app);
 var io=require('socket.io')(http);//it is method to define socket
 
 app.use(express.static(__dirname +'/public'));
+// it tells that user connected
 io.on('connection', function () {
 	console.log('User connected via socket.io!');
 });
