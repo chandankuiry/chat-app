@@ -6,8 +6,21 @@ var io=require('socket.io')(http);//it is method to define socket
 
 app.use(express.static(__dirname +'/public'));
 // it tells that user connected
-io.on('connection', function () {
+io.on('connection', function (socket) {
 	console.log('User connected via socket.io!');
+
+	//for typing message and send to everyone from server in server also seen 
+	socket.on('message', function (message) {
+		console.log('Message Received:  ' +message.text);
+		//for sending everyone or we say everyone can see by this
+		socket.broadcast.emit('message',message);
+		// sender can also see the message using io.emit 
+	});
+	//for sending everyone
+	socket.emit('message',{
+		text:'Welcome to Chat Application !'
+	});
+
 });
 
 http.listen(PORT, function () {
