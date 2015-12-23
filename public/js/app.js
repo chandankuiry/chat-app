@@ -7,6 +7,8 @@ socket.on('connect', function () {
 socket.on('message', function (message) {
 	console.log('New message');
 	console.log(message.text);
+
+	jQuery('.messages').append('<p>' + message.text +'</p>');
 });
 //HANDLE SUBMITTING FOR NEW MESSAGE
 var $form =jQuery('#message-form');//here $ we use access jquery element
@@ -22,6 +24,6 @@ $form.on('submit' , function (event){
 		
 	});
 	//to erase the message from input field after submitting
-	$message.val(alert('your message sent'));//we set to a empty string 
+	$message.val('');//we set to a empty string 
 
 });

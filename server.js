@@ -12,9 +12,10 @@ io.on('connection', function (socket) {
 	//for typing message and send to everyone from server in server also seen 
 	socket.on('message', function (message) {
 		console.log('Message Received:  ' +message.text);
-		//for sending everyone or we say everyone can see by this
-		socket.broadcast.emit('message',message);
-		// sender can also see the message using io.emit 
+		//for sending everyone or we say everyone can see messages excluding sender
+		//socket.broadcast.emit('message',message);
+		// sender can also see the message using io.emit and this case everyone also can see the received message
+		io.emit('message',message);
 	});
 	//for sending everyone
 	socket.emit('message',{
