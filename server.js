@@ -22,6 +22,7 @@ io.on('connection', function (socket) {
 	});
 	//for sending everyone
 	socket.emit('message',{
+		name:'System',
 		text:'Welcome to Chat Application !',
 		timestamp:moment().valueOf()
 	});

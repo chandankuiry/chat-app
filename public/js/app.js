@@ -1,4 +1,8 @@
+var name=getQueryVariable('name') || 'Anonymous user';
+var room=getQueryVariable('room')
 var socket =io();
+
+console.log(name + '  wants to join ' + room);
 //for server connection
 socket.on('connect', function () {
 	console.log('Connected to socket.io server');
@@ -6,10 +10,12 @@ socket.on('connect', function () {
 //to listen the message what we sent
 socket.on('message', function (message) {
 	var momentTimestamp =moment.utc(message.timestamp)
+	var $message = jQuery('.messages');
 	console.log('New message');
 	console.log(message.text);
 
-	jQuery('.messages').append('<p><strong>' +momentTimestamp.local().format('h:mm a')+ ': </strong>' + message.text +'</p>');
+	$message.append('<p><strong>' + message.name + ' '+' ' +momentTimestamp.local().format('h:mm a')+ '</strong></p>');
+	$message.append('<p>'+ message.text+'</p>');
 });
 //HANDLE SUBMITTING FOR NEW MESSAGE
 var $form =jQuery('#message-form');//here $ we use access jquery element
@@ -20,6 +26,7 @@ $form.on('submit' , function (event){
 	$message =$form.find('input[name=message]');//we use this twice so it saved in a variable
 	//sending message to server
 	socket.emit('message' ,{
+		name:name,
 		text:$message.val()
 		//here we use find method to find input whose name=message and val()  we used to pull out the message as string
 		
