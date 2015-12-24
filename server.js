@@ -1,4 +1,5 @@
 var PORT = process.env.PORT || 3000;
+var moment=require('moment');
 var express = require('express');
 var app = express();
 var http= require('http').Server(app);
@@ -14,12 +15,15 @@ io.on('connection', function (socket) {
 		console.log('Message Received:  ' +message.text);
 		//for sending everyone or we say everyone can see messages excluding sender
 		//socket.broadcast.emit('message',message);
+		//TO SEE THE TIME WE USE MOMENTJS PROPERTY
+		message.timestamp=moment().valueOf();//see moment-example.js
 		// sender can also see the message using io.emit and this case everyone also can see the received message
 		io.emit('message',message);
 	});
 	//for sending everyone
 	socket.emit('message',{
-		text:'Welcome to Chat Application !'
+		text:'Welcome to Chat Application !',
+		timestamp:moment().valueOf()
 	});
 
 });
