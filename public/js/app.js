@@ -3,9 +3,16 @@ var room=getQueryVariable('room')
 var socket =io();
 
 console.log(name + '  wants to join ' + room);
+//udate room tag h1
+jQuery('.room-title').text(room);
 //for server connection
 socket.on('connect', function () {
 	console.log('Connected to socket.io server');
+	//here define user can specific join a room
+	socket.emit('joinRoom', {
+		name:name,//to specify a name
+		room:room//to specify a room name
+	});
 });
 //to listen the message what we sent
 socket.on('message', function (message) {
