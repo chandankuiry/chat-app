@@ -10,7 +10,27 @@ var clientInfo={};//this variable is created for generate the unique key value p
 // it tells that user connected
 io.on('connection', function (socket) {
 	console.log('User connected via socket.io!');
-	//server side connection for joining a particular room
+	//for disconnect from a chat room means leave achat room
+	//here we use builtin event call 'disconnect'
+	socket.on('disconnect', function (){
+		//we have to use clientInfo[socket.id] many times so we assign this in a variable
+		userData=clientInfo[socket.id];
+		//check if the userid is from that chat room
+		if (typeof userData !== 'undefined') {
+			//for leaveing a chat room
+			socket.leave(userData.room);//'leave' is just like 'join' 
+			//to leave a message that someone leave that chat room 
+			io.to(userData.room).emit('message' ,{
+				name:'System',
+				text: userData.name + ' has left this chat room !',
+				timestamp:moment().valueOf()
+
+			});
+			delete userData;
+
+		}
+	});
+	//server side connection for joining a particular room "joinRoom builtin socketio event"
 	socket.on('joinRoom', function (req) {
 		//for generate unique key value pair according to socket.id who join this room
 		clientInfo[socket.id] =req;//we use =req for who request to join chat room and use [] for dynamic data
@@ -20,7 +40,7 @@ io.on('connection', function (socket) {
 		socket.broadcast.to(req.room).emit('message',{//(req.room) for only the people of that room can see the message
 			name:'System',
 			text:req.name + ' has joined this room!',//to see the name who joined
-			timestamp: moment().valueOf()//to see the message when join the room
+			timestamp:moment().valueOf()//to see the message when join the room
 		}); 
 	});
 
