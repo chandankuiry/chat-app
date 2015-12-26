@@ -7,6 +7,32 @@ var io=require('socket.io')(http);//it is method to define socket
 
 app.use(express.static(__dirname +'/public'));
 var clientInfo={};//this variable is created for generate the unique key value pair for chat Room
+//it tells the @currentuser command see below which return all the active user on that room
+function sendCurrentUsers (socket) {
+	var info=clientInfo[socket.id];
+	var users=[];//to store all the currrent user on that room
+	//check userid is correct or not
+	if (typeof info === 'undefined') {
+		return;
+	} 
+	//it return all the current user .we use here builtin method 'Object.keys'
+	Object.keys(clientInfo).forEach(function (socketId) {
+		var userInfo =clientInfo[socketId];//here we store the socketId for 
+		//checking that user in that room in next level
+		//to check the userInfo is from that room or not
+		if (info.room === userInfo.room) {
+			users.push(userInfo.name);
+		}  
+	});
+	//for return current user
+	socket.emit('message' , {
+		name:'System' ,
+		//here we use users.join which convert all the array element convert 
+		//to a string and push them together and (, ) it return all the users like chandan, ben ,.. 
+		text:'current users are : ' + users.join(', '),
+		timestamp:moment().valueOf() 
+	});
+}
 // it tells that user connected
 io.on('connection', function (socket) {
 	console.log('User connected via socket.io!');
@@ -47,14 +73,21 @@ io.on('connection', function (socket) {
 	//for typing message and send to everyone from server in server also seen 
 	socket.on('message', function (message) {
 		console.log('Message Received:  ' +message.text);
-		//for sending everyone or we say everyone can see messages excluding sender
-		//socket.broadcast.emit('message',message);
-		//TO SEE THE TIME WE USE MOMENTJS PROPERTY
-		message.timestamp=moment().valueOf();//see moment-example.js
-		// sender can also see the message using io.emit and this case everyone also can see the received message
-		//io.emit('message',message);
-		//for chat room only can see the message who join chat room
-		io.to(clientInfo[socket.id].room).emit('message',message);
+		//here we check if the message is @currentUsers command or not
+		if (message.text === '@currentUsers') {
+			//this command run above function sendCurrentUsers
+			sendCurrentUsers(socket);
+		}else {
+			//for sending everyone or we say everyone can see messages excluding sender
+			//socket.broadcast.emit('message',message);
+			//TO SEE THE TIME WE USE MOMENTJS PROPERTY
+			message.timestamp = moment().valueOf(); //see moment-example.js
+			// sender can also see the message using io.emit and this case everyone also can see the received message
+			//io.emit('message',message);
+			//for chat room only can see the message who join chat room
+			io.to(clientInfo[socket.id].room).emit('message', message);
+		}
+		
 	});
 	//for sending everyone
 	socket.emit('message',{
