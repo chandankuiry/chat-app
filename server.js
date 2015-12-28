@@ -74,7 +74,7 @@ io.on('connection', function (socket) {
 	socket.on('message', function (message) {
 		console.log('Message Received:  ' +message.text);
 		//here we check if the message is @currentUsers command or not
-		if (message.text === '@currentUsers') {
+		if (message.text === '@currentusers') {
 			//this command run above function sendCurrentUsers
 			sendCurrentUsers(socket);
 		}else {
